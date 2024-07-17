@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/reflection"
 	"io"
 	"log"
 	"net"
@@ -21,6 +22,7 @@ func (s *server) UnaryCall(ctx context.Context, req *pb.Request) (*pb.Response, 
 
 func (s *server) ClientStreamingCall(stream pb.DemoService_ClientStreamingCallServer) error {
 	var messages []string
+	i := 1
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
@@ -29,7 +31,8 @@ func (s *server) ClientStreamingCall(stream pb.DemoService_ClientStreamingCallSe
 		if err != nil {
 			return err
 		}
-		messages = append(messages, req.Message)
+		messages = append(messages, fmt.Sprintf("%s %d", req.Message, i))
+		i++
 	}
 }
 
@@ -65,6 +68,7 @@ func main() {
 
 	s := grpc.NewServer()
 	pb.RegisterDemoServiceServer(s, &server{})
+	reflection.Register(s)
 
 	log.Println("Server is running on port 50051")
 	if err := s.Serve(lis); err != nil {
