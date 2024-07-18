@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
 
 	pb "github.com/anilozgok/grpc-demo/proto"
 	"google.golang.org/grpc"
@@ -26,7 +27,7 @@ func (s *server) ClientStreamingCall(stream pb.DemoService_ClientStreamingCallSe
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			return stream.SendAndClose(&pb.Response{Message: "Client streaming response: " + fmt.Sprint(messages)})
+			return stream.SendAndClose(&pb.Response{Message: "Client streaming response: " + strings.Join(messages, ", ")})
 		}
 		if err != nil {
 			return err
