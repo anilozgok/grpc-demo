@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 
 	pb "github.com/anilozgok/grpc-demo/proto"
 	"google.golang.org/grpc"
@@ -39,6 +40,7 @@ func (s *server) ClientStreamingCall(stream pb.DemoService_ClientStreamingCallSe
 
 func (s *server) ServerStreamingCall(req *pb.Request, stream pb.DemoService_ServerStreamingCallServer) error {
 	for i := 0; i < 5; i++ {
+		time.Sleep(1 * time.Second)
 		if err := stream.Send(&pb.Response{Message: fmt.Sprintf("Server streaming response %d: %s", i, req.Message)}); err != nil {
 			return err
 		}
